@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# Y",
+    "#EC",
+    "Y C"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:magenta_dye"
+    },
+    "Y": {
+      "item": "minecraft:yellow_dye"
+    },
+    "E": {
+      "item": "minecraft:honeycomb"
+    },
+    "C": {
+      "item": "minecraft:cyan_dye"
+    }
+  },
+  "result": {
+    "item": "beebuddy:pan_nectar",
+    "count": 3
+  }
+}

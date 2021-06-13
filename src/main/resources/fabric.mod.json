@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "beebuddy",
+  "version": "${version}",
+
+  "name": "Bee Buddies",
+  "description": "the bees. they love you.",
+  "authors": [ "Nomble, Queen of the Bees", "LemmaEOF" ],
+
+  "license": [ "WTFPL", "MIT" ],
+  "icon": "assets/beebuddy/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "nomble.beebuddy.BeeBuddy"
+    ]
+  },
+  "mixins": [
+    "beebuddy.mixins.json",
+    "beebuddy.mixins_client.json"
+  ],
+  "accessWidener": "beebuddy.accesswidener",
+
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "minecraft": "1.16.x"
+  },
+  "recommends": {
+      "fabric": "*"
+  }
+}

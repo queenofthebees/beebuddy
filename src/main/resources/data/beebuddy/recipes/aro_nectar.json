@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#  ",
+    "WLP",
+    "  B"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:green_dye"
+    },
+    "W": {
+      "item": "minecraft:white_dye"
+    },
+    "L": {
+      "item": "minecraft:honeycomb"
+    },
+    "P": {
+      "item": "minecraft:gray_dye"
+    },
+    "B": {
+      "item": "minecraft:black_dye"
+    }
+  },
+  "result": {
+    "item": "beebuddy:aro_nectar",
+    "count": 3
+  }
+}

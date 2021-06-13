@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "nomble.beebuddy.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+      "AnimalEntityMixin",
+      "BeeEntityMixin",
+      "GoalSelectorMixin",
+      "PlayerEntityMixin",
+      "ServerPlayerEntityMixin",
+      "invoker.BeeWanderAroundGoalInvoker",
+      "invoker.EntityInvoker",
+      "invoker.MoveToFlowerGoalInvoker",
+      "invoker.PollinateGoalInvoker",
+      "invoker.StingGoalInvoker"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# P",
+    "#EB",
+    "P B"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:magenta_dye"
+    },
+    "P": {
+      "item": "minecraft:purple_dye"
+    },
+    "E": {
+      "item": "minecraft:honeycomb"
+    },
+    "B": {
+      "item": "minecraft:blue_dye"
+    }
+  },
+  "result": {
+    "item": "beebuddy:bi_nectar",
+    "count": 3
+  }
+}

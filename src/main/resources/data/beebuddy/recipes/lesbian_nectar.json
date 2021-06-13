@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# B",
+    "#EM",
+    "B M"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:orange_dye"
+    },
+    "B": {
+      "item": "minecraft:white_dye"
+    },
+    "E": {
+      "item": "minecraft:honeycomb"
+    },
+    "M": {
+      "item": "minecraft:magenta_dye"
+    }
+  },
+  "result": {
+    "item": "beebuddy:lesbian_nectar",
+    "count": 3
+  }
+}

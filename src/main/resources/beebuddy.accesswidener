@@ -1,0 +1,5 @@
+accessWidener v1    named
+accessible    class net/minecraft/entity/passive/BeeEntity$StingGoal
+accessible    class net/minecraft/entity/passive/BeeEntity$PollinateGoal
+accessible    class net/minecraft/entity/passive/BeeEntity$MoveToFlowerGoal
+accessible    class net/minecraft/entity/passive/BeeEntity$BeeWanderAroundGoal

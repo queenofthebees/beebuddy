@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# W",
+    "PLP",
+    "W #"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:light_blue_dye"
+    },
+    "W": {
+      "item": "minecraft:white_dye"
+    },
+    "P": {
+      "item": "minecraft:pink_dye"
+    },
+    "L": {
+      "item": "minecraft:honeycomb"
+    }
+  },
+  "result": {
+    "item": "beebuddy:trans_nectar",
+    "count": 3
+  }
+}

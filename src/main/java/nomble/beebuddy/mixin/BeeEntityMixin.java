@@ -1,0 +1,347 @@
+package nomble.beebuddy.mixin;
+
+import java.nio.charset.CoderMalfunctionError;
+import java.util.Optional;
+import java.util.UUID;
+
+import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.goal.AnimalMateGoal;
+import net.minecraft.entity.ai.goal.FollowParentGoal;
+import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.PrioritizedGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
+import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.passive.BeeEntity;
+import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.ServerConfigHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.server.world.ServerWorld;
+
+import nomble.beebuddy.duck.IFriendlyBee;
+import nomble.beebuddy.duck.IGoalRemover;
+import nomble.beebuddy.entity.ai.goal.BeeSitGoal;
+import nomble.beebuddy.entity.ai.goal.FollowFriendGoal;
+import nomble.beebuddy.entity.ai.goal.SitOnHeadGoal;
+import nomble.beebuddy.item.NectarItem;
+import nomble.beebuddy.mixin.invoker.StingGoalInvoker;
+import nomble.beebuddy.mixin.invoker.PollinateGoalInvoker;
+import nomble.beebuddy.mixin.invoker.MoveToFlowerGoalInvoker;
+import nomble.beebuddy.mixin.invoker.BeeWanderAroundGoalInvoker;
+
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.gen.Invoker;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import org.jetbrains.annotations.Nullable;
+
+@Mixin(BeeEntity.class)
+public abstract class BeeEntityMixin extends AnimalEntityMixin
+                                     implements IFriendlyBee{
+    public BeeEntityMixin(EntityType<? extends PassiveEntity> t, World w){
+        super(t, w);
+    }
+
+
+
+    @Unique
+    private static final TrackedData<Byte> beebuddy$TAMEFLAGS
+        = DataTracker.registerData( BeeEntity.class
+                                  , TrackedDataHandlerRegistry.BYTE);
+    @Unique
+    private static final TrackedData<Optional<UUID>> beebuddy$OWNER
+        = DataTracker.registerData( BeeEntity.class
+                                  , TrackedDataHandlerRegistry.OPTIONAL_UUID);
+    @Unique
+    private static final TrackedData<String> beebuddy$NECTAR
+        = DataTracker.registerData( BeeEntity.class
+                                  , TrackedDataHandlerRegistry.STRING);
+    @Unique
+    private Optional<PlayerEntity> beebuddy$friendCache = Optional.empty();
+
+    @Shadow
+    private BeeEntity.PollinateGoal pollinateGoal;
+    @Shadow
+    private BeeEntity.MoveToFlowerGoal moveToFlowerGoal;
+    @Shadow
+    private BlockPos hivePos;
+
+
+
+    @Invoker
+    public abstract void callSetHasNectar(boolean hasNectar);
+
+
+
+    @Unique
+    private boolean beebuddy$hasFriend(){
+        return ((Byte)this.dataTracker.get(beebuddy$TAMEFLAGS) & 4) != 0;
+    }
+    @Unique
+    private Optional<UUID> beebuddy$getFriend(){
+        return (Optional<UUID>)this.dataTracker.get(beebuddy$OWNER);
+    }
+    @Override
+    @Unique
+    public Optional<PlayerEntity> beebuddy$getFriendPlayer(){
+        if(!beebuddy$friendCache.isPresent()){
+            Optional<UUID> u = beebuddy$getFriend();
+            beebuddy$friendCache = u.map(this.world::getPlayerByUuid);
+        }
+        return beebuddy$friendCache;
+    }
+
+
+    @Override
+    @Unique
+    public boolean beebuddy$isSitting(){
+        return ((Byte)this.dataTracker.get(beebuddy$TAMEFLAGS) & 1) != 0;
+    }
+    @Unique
+    private void beebuddy$setSitting(boolean b){
+        int s = (Byte)this.dataTracker.get(beebuddy$TAMEFLAGS) & -2;
+        s |= b ? 1 : 0;
+        this.dataTracker.set(beebuddy$TAMEFLAGS, (byte)s);
+    }
+
+    @Override
+    @Unique
+    public String beebuddy$getNectarType(){
+        return (String)this.dataTracker.get(beebuddy$NECTAR);
+    }
+    @Unique
+    private void beebuddy$setNectarType(String type){
+        this.dataTracker.set(beebuddy$NECTAR, type);
+    }
+
+    @Override
+    @Unique
+    public boolean beebuddy$getPollinateGoalRunning(){
+        return this.goalSelector.getRunningGoals()
+                   .map(PrioritizedGoal::getGoal)
+                   .filter(g -> g == pollinateGoal).count() > 0L;
+    }
+    @Override
+    @Unique
+    public boolean beebuddy$getMoveToFlowerGoalRunning(){
+        return this.goalSelector.getRunningGoals()
+                   .map(PrioritizedGoal::getGoal)
+                   .filter(g -> g == moveToFlowerGoal).count() > 0L;
+    }
+
+    @Unique
+    private void beebuddy$initTamedGoals(){
+        BeeEntity us = (BeeEntity)(Object)this;
+
+        this.goalSelector.add(0, new BeeSitGoal(us));
+        this.goalSelector
+            .add(1, StingGoalInvoker.beebuddy$make( us, us, 1.399999976158142D
+                                                  , true));
+        this.goalSelector.add(2, new FollowParentGoal(us, 1.25D));
+        this.goalSelector.add(3, new FollowFriendGoal(us));
+        this.goalSelector.add(4, new AnimalMateGoal(us, 1.0D));
+        if(pollinateGoal == null){ // we can be called before initGoals's body
+            pollinateGoal = PollinateGoalInvoker.beebuddy$make(us);
+        }
+        this.goalSelector.add(5, pollinateGoal);
+        if(moveToFlowerGoal == null){
+            moveToFlowerGoal = MoveToFlowerGoalInvoker.beebuddy$make(us);
+        }
+        this.goalSelector.add(6, moveToFlowerGoal);
+        this.goalSelector.add(7, new SitOnHeadGoal(us));
+        this.goalSelector.add(7, BeeWanderAroundGoalInvoker.beebuddy$make(us));
+        this.goalSelector.add(8, new LookAtEntityGoal(us, PlayerEntity.class
+                                                        , 4.0F));
+        this.goalSelector.add(8, new SwimGoal(us));
+
+        this.targetSelector.add(1, (new RevengeGoal(this){
+            @Override
+            public boolean shouldContinue(){
+                return us.hasAngerTime() && super.shouldContinue();
+            }
+        }).setGroupRevenge(new Class[0]));
+    }
+    @Unique
+    private void beebuddy$friendify(){
+        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)
+            .setBaseValue(42.0D);
+        this.setHealth(42.0F);
+        ((IGoalRemover)(Object)this.goalSelector).beebuddy$clear();
+        ((IGoalRemover)(Object)this.targetSelector).beebuddy$clear();
+        beebuddy$setSitting(true);
+        beebuddy$initTamedGoals();
+    }
+
+
+
+    @Inject(method = "initGoals", at = @At("HEAD"), cancellable = true)
+    private void changeGoalsIfFriend(CallbackInfo cbi){
+        if(beebuddy$hasFriend()){
+            beebuddy$initTamedGoals();
+            cbi.cancel();
+        }
+    }
+    @Inject(method = "initDataTracker", at = @At("TAIL"))
+    private void initFriendTracker(CallbackInfo cbi){
+        this.dataTracker.startTracking(beebuddy$TAMEFLAGS, (byte)0);
+        this.dataTracker.startTracking(beebuddy$OWNER, Optional.empty());
+        this.dataTracker.startTracking(beebuddy$NECTAR, "default");
+    }
+
+
+
+    @Inject(method = "writeCustomDataToTag", at = @At("TAIL"))
+    private void writeFriendship(CompoundTag tag, CallbackInfo cbi){
+        beebuddy$getFriend().ifPresent(u -> tag.putUuid("Owner", u));
+        tag.putBoolean("Sitting", beebuddy$isSitting());
+        tag.putString("BeeBuddyNectar", beebuddy$getNectarType());
+    }
+    @Inject(method = "readCustomDataFromTag", at = @At("TAIL"))
+    private void readFriendship(CompoundTag tag, CallbackInfo cbi){
+        byte tame = 0;
+        UUID u = null;
+        if(tag.containsUuid("Owner")){
+            u = tag.getUuid("Owner");
+            tame |= 4;
+        }
+        else if(tag.contains("Owner")){
+            String s = tag.getString("Owner");
+            u = ServerConfigHandler.getPlayerUuidByName(this.getServer(), s);
+            tame |= 4;
+        }
+
+        if(tag.getBoolean("Sitting")){
+            tame |= 1;
+        }
+        this.dataTracker.set(beebuddy$OWNER, Optional.ofNullable(u));
+        this.dataTracker.set(beebuddy$TAMEFLAGS, tame);
+        if(tag.contains("BeeBuddyNectar")){
+            beebuddy$setNectarType(tag.getString("BeeBuddyNectar"));
+        }
+
+        if(!this.world.isClient){
+            ((IGoalRemover)(Object)this.goalSelector).beebuddy$clear();
+            ((IGoalRemover)(Object)this.targetSelector).beebuddy$clear();
+            initGoals();
+        }
+    }
+
+
+
+    @Inject(method = "hasStung", at = @At("HEAD"), cancellable = true)
+    private void cannotSting(CallbackInfoReturnable<Boolean> cbir){
+        if(beebuddy$hasFriend()){
+            cbir.setReturnValue(false);
+        }
+    }
+    @Inject(method = "damage", at = @At("HEAD"))
+    private void standToDamage( DamageSource src, float a
+                              , CallbackInfoReturnable<Boolean> cbir){
+        if(!this.isInvulnerableTo(src)){
+            beebuddy$setSitting(false);
+        }
+    }
+
+
+
+    @Inject(method = "tickMovement", at = @At("TAIL"))
+    private void friendIsHive(CallbackInfo cbi){
+        if(this.age % 20 == 0){
+            beebuddy$getFriendPlayer().ifPresent(f -> {
+                hivePos = f.getBlockPos();
+            });
+        }
+    }
+    @Inject(method = "isHiveValid", at = @At("HEAD"), cancellable = true)
+    private void friendIsValid(CallbackInfoReturnable<Boolean> cbir){
+        if(beebuddy$hasFriend()){
+            cbir.setReturnValue(hivePos != null);
+        }
+    }
+    @Inject(method = "hasHive", at = @At("HEAD"), cancellable = true)
+    private void dontEnterFriend(CallbackInfoReturnable<Boolean> cbir){
+        if(beebuddy$hasFriend()){
+            cbir.setReturnValue(false);
+        }
+    }
+
+
+
+    @Override
+    protected void tame( PlayerEntity player, Hand hand
+                       , CallbackInfoReturnable<ActionResult> cbir){
+        ItemStack stack = player.getStackInHand(hand);
+        boolean friend = beebuddy$getFriend().map(player.getUuid()::equals)
+                                             .orElse(false);
+        if(!this.world.isClient){
+            if(stack.getItem() == Items.HONEY_BOTTLE){
+                if(friend && this.getHealth() < this.getMaxHealth()){
+                    if(!player.abilities.creativeMode){
+                        stack.decrement(1);
+                    }
+                    this.heal(this.getMaxHealth());
+                    cbir.setReturnValue(ActionResult.SUCCESS);
+                }
+                else if(!friend && !beebuddy$hasFriend()){
+                    if(!player.abilities.creativeMode){
+                        stack.decrement(1);
+                    }
+                    if(this.random.nextInt(4) == 0){
+                        Optional<UUID> u = Optional.of(player.getUuid());
+                        this.dataTracker.set(beebuddy$OWNER, u);
+                        if(player instanceof ServerPlayerEntity){
+                            ServerPlayerEntity p = (ServerPlayerEntity)player;
+                            Criteria.TAME_ANIMAL
+                                    .trigger(p, (BeeEntity)(Object)this);
+                        }
+                        beebuddy$friendify();
+                        this.world.sendEntityStatus(this, (byte)7);
+                    }
+                    else{
+                        this.world.sendEntityStatus(this, (byte)6);
+                    }
+                    cbir.setReturnValue(ActionResult.SUCCESS);
+                }
+            }
+            else if(stack.getItem() instanceof NectarItem){
+                NectarItem n = (NectarItem)stack.getItem();
+                if(friend || !beebuddy$hasFriend()){
+                    if(!player.abilities.creativeMode){
+                        stack.decrement(1);
+                    }
+                    beebuddy$setNectarType(n.getType());
+                    cbir.setReturnValue(ActionResult.SUCCESS);
+                }
+            }
+            else{
+                beebuddy$setSitting(!beebuddy$isSitting());
+                cbir.setReturnValue(ActionResult.SUCCESS);
+            }
+        }
+        else if(friend || stack.getItem() == Items.HONEY_BOTTLE){
+            cbir.setReturnValue(ActionResult.CONSUME);
+        }
+        else if(stack.getItem() instanceof NectarItem){
+            cbir.setReturnValue(ActionResult.CONSUME);
+        }
+    }
+}

@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "nomble.beebuddy.client.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+      "accessor.BeeEntityModelAccessor",
+      "AnimalEntityMixin",
+      "BeeEntityMixin",
+      "BeeEntityRendererMixin",
+      "invoker.LivingEntityRendererInvoker",
+      "PlayerEntityRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

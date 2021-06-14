@@ -90,7 +90,7 @@ public abstract class PlayerEntityMixin extends LivingEntity
 
     @Inject(method = "writeCustomDataToTag", at = @At("TAIL"))
     private void writeHeadFriend(CompoundTag tag, CallbackInfo cbi){
-        if(!beebuddy$hasHeadFriend()){
+        if(beebuddy$hasHeadFriend()){
             tag.put("HeadFriend", beebuddy$getHeadFriendNbt());
         }
     }

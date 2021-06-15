@@ -6,6 +6,10 @@
   "name": "Bee Buddies",
   "description": "the bees. they love you.",
   "authors": [ "Queen of the Bees", "LemmaEOF" ],
+  "contact": {
+    "issues": "https://github.com/queenofthebees/beebuddy/issues",
+    "sources": "https://github.com/queenofthebees/beebuddy"
+  },
 
   "license": [ "WTFPL", "MIT" ],
   "icon": "assets/beebuddy/icon.png",
@@ -27,6 +31,6 @@
     "minecraft": "1.16.x"
   },
   "recommends": {
-      "fabric": "*"
+    "fabric": "*"
   }
 }

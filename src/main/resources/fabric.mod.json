@@ -5,7 +5,7 @@
 
   "name": "Bee Buddies",
   "description": "the bees. they love you.",
-  "authors": [ "Nomble, Queen of the Bees", "LemmaEOF" ],
+  "authors": [ "Queen of the Bees", "LemmaEOF" ],
 
   "license": [ "WTFPL", "MIT" ],
   "icon": "assets/beebuddy/icon.png",

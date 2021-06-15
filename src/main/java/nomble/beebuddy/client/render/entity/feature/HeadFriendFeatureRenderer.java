@@ -3,6 +3,7 @@ package nomble.beebuddy.client.render.entity.feature;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvType;
 
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -11,6 +12,7 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BeeEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -63,14 +65,19 @@ public class HeadFriendFeatureRenderer<T extends PlayerEntity>
             }
             VertexConsumer v = vcp.getBuffer(bee.getLayer(tex));
 
+            ModelPart h = this.getContextModel().getHead();
             matrices.push();
-            if(t.getInt("Age") >= 0){
-                matrices.scale(2F, 2F, 2F);
+            if(player.isInSneakingPose()){ // offsets from BipedEntityModel
+                matrices.translate(0F, 0.2625F, 0F);
             }
-            this.getContextModel().getHead().rotate(matrices);
-            double off = player.isInSneakingPose() ? -1.5187499523162842D
-                                                   : -1.71875D;
-            matrices.translate(0D, off, 0D);
+            matrices.multiply(Vector3f.POSITIVE_Z.getRadialQuaternion(h.roll));
+            matrices.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(h.yaw));
+            matrices.multiply(Vector3f.POSITIVE_X.getRadialQuaternion(h.pitch));
+            //float ageMod = t.getInt("Age") >= 0 ? 2F : 1F;
+            float ageMod = 1F;
+            float headPos = player.isInSneakingPose() ? -1.4875F : -1.5F;
+            matrices.translate(0F, ageMod * headPos - 0.4375, 0F);
+            matrices.scale(ageMod, ageMod, ageMod);
 
             BeeEntityModelAccessor bea = (BeeEntityModelAccessor)(Object)bee;
             bee.setAngles(fake, 0F, 0F, animationProgress, 0F, 0F);

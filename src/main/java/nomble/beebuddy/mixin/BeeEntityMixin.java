@@ -376,4 +376,15 @@ public abstract class BeeEntityMixin extends AnimalEntityMixin
             cbir.setReturnValue(ActionResult.CONSUME);
         }
     }
+
+    @Override
+    protected void doAceReproduction(PlayerEntity player, CallbackInfo cbi){
+        if(beebuddy$getNectarType().equals("ace")){
+            if(this.world instanceof ServerWorld){
+                BeeEntity us = (BeeEntity)(Object)this;
+                us.breed((ServerWorld)this.world, us);
+                us.setBaby(true);
+            }
+        }
+    }
 }

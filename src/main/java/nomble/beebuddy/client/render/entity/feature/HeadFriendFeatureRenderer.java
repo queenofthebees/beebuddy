@@ -73,8 +73,7 @@ public class HeadFriendFeatureRenderer<T extends PlayerEntity>
             matrices.multiply(Vector3f.POSITIVE_Z.getRadialQuaternion(h.roll));
             matrices.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(h.yaw));
             matrices.multiply(Vector3f.POSITIVE_X.getRadialQuaternion(h.pitch));
-            //float ageMod = t.getInt("Age") >= 0 ? 2F : 1F;
-            float ageMod = 1F;
+            float ageMod = t.getInt("Age") >= 0 ? 2F : 1F;
             float headPos = player.isInSneakingPose() ? -1.4875F : -1.5F;
             matrices.translate(0F, ageMod * headPos - 0.4375, 0F);
             matrices.scale(ageMod, ageMod, ageMod);

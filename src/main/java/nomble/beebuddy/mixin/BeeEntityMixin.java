@@ -96,8 +96,9 @@ public abstract class BeeEntityMixin extends AnimalEntityMixin
     private boolean beebuddy$hasFriend(){
         return ((Byte)this.dataTracker.get(beebuddy$TAMEFLAGS) & 4) != 0;
     }
+    @Override
     @Unique
-    private Optional<UUID> beebuddy$getFriend(){
+    public Optional<UUID> beebuddy$getFriend(){
         return (Optional<UUID>)this.dataTracker.get(beebuddy$OWNER);
     }
     @Override
@@ -108,6 +109,11 @@ public abstract class BeeEntityMixin extends AnimalEntityMixin
             beebuddy$friendCache = u.map(this.world::getPlayerByUuid);
         }
         return beebuddy$friendCache;
+    }
+    @Override
+    @Unique
+    public void beebuddy$setFriend(Optional<UUID> friend){
+        this.dataTracker.set(beebuddy$OWNER, friend);
     }
 
 
@@ -128,8 +134,9 @@ public abstract class BeeEntityMixin extends AnimalEntityMixin
     public String beebuddy$getNectarType(){
         return (String)this.dataTracker.get(beebuddy$NECTAR);
     }
+    @Override
     @Unique
-    private void beebuddy$setNectarType(String type){
+    public void beebuddy$setNectarType(String type){
         this.dataTracker.set(beebuddy$NECTAR, type);
     }
 
@@ -180,8 +187,9 @@ public abstract class BeeEntityMixin extends AnimalEntityMixin
             }
         }).setGroupRevenge(new Class[0]));
     }
+    @Override
     @Unique
-    private void beebuddy$friendify(){
+    public void beebuddy$friendify(){
         this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)
             .setBaseValue(42.0D);
         this.setHealth(42.0F);
@@ -232,7 +240,7 @@ public abstract class BeeEntityMixin extends AnimalEntityMixin
         if(tag.getBoolean("Sitting")){
             tame |= 1;
         }
-        this.dataTracker.set(beebuddy$OWNER, Optional.ofNullable(u));
+        beebuddy$setFriend(Optional.ofNullable(u));
         this.dataTracker.set(beebuddy$TAMEFLAGS, tame);
         if(tag.contains("BeeBuddyNectar")){
             beebuddy$setNectarType(tag.getString("BeeBuddyNectar"));
@@ -286,6 +294,31 @@ public abstract class BeeEntityMixin extends AnimalEntityMixin
 
 
 
+    @Inject(method = "createChild", at = @At("HEAD"), cancellable = true)
+    private void makePrideChild( ServerWorld world, PassiveEntity entity
+                               , CallbackInfoReturnable<BeeEntity> cbir){
+        if(entity instanceof BeeEntity){
+            IFriendlyBee partner = (IFriendlyBee)(Object)entity;
+            BeeEntity child = (BeeEntity)EntityType.BEE.create(world);
+            IFriendlyBee fchild = (IFriendlyBee)(Object)child;
+
+            String ours = beebuddy$getNectarType();
+            String theirs = partner.beebuddy$getNectarType();
+            fchild.beebuddy$setNectarType(this.random.nextBoolean() ? ours
+                                                                    : theirs);
+            if(beebuddy$getFriend().equals(partner.beebuddy$getFriend())){
+                beebuddy$getFriend().ifPresent(u -> {
+                        fchild.beebuddy$setFriend(Optional.of(u));
+                        fchild.beebuddy$friendify();
+                });
+            }
+
+            cbir.setReturnValue(child);
+        }
+    }
+
+
+
     @Override
     protected void tame( PlayerEntity player, Hand hand
                        , CallbackInfoReturnable<ActionResult> cbir){
@@ -306,8 +339,7 @@ public abstract class BeeEntityMixin extends AnimalEntityMixin
                         stack.decrement(1);
                     }
                     if(this.random.nextInt(4) == 0){
-                        Optional<UUID> u = Optional.of(player.getUuid());
-                        this.dataTracker.set(beebuddy$OWNER, u);
+                        beebuddy$setFriend(Optional.of(player.getUuid()));
                         if(player instanceof ServerPlayerEntity){
                             ServerPlayerEntity p = (ServerPlayerEntity)player;
                             Criteria.TAME_ANIMAL

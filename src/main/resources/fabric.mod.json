@@ -5,7 +5,14 @@
 
   "name": "Bee Buddies",
   "description": "the bees. they love you.",
-  "authors": [ "Queen of the Bees", "LemmaEOF" ],
+  "authors": [
+    "Queen of the Bees",
+    "LemmaEOF",
+    {
+      "name": "reverie",
+      "contact": { "discord": "reverie#0563" }
+    }
+  ],
   "contact": {
     "issues": "https://github.com/queenofthebees/beebuddy/issues",
     "sources": "https://github.com/queenofthebees/beebuddy"

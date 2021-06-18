@@ -84,6 +84,8 @@ public abstract class BeeEntityMixin extends AnimalEntityMixin
     private BeeEntity.MoveToFlowerGoal moveToFlowerGoal;
     @Shadow
     private BlockPos hivePos;
+    @Shadow
+    private int ticksInsideWater;
 
 
 
@@ -314,6 +316,13 @@ public abstract class BeeEntityMixin extends AnimalEntityMixin
             }
 
             cbir.setReturnValue(child);
+        }
+    }
+
+    @Inject(method = "mobTick", at = @At("HEAD"))
+    private void doFluidLiquid(CallbackInfo cbi){
+        if(beebuddy$getNectarType().equals("genderfluid")){
+            ticksInsideWater = 0;
         }
     }
 

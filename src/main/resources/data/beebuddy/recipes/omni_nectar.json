@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# B",
+    "#EL",
+    "B L"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:pink_dye"
+    },
+    "B": {
+      "item": "minecraft:black_dye"
+    },
+    "E": {
+      "item": "minecraft:honeycomb"
+    },
+    "L": {
+      "item": "minecraft:light_blue_dye"
+    }
+  },
+  "result": {
+    "item": "beebuddy:omni_nectar",
+    "count": 3
+  }
+}

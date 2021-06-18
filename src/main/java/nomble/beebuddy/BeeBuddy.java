@@ -17,8 +17,11 @@ public class BeeBuddy implements ModInitializer{
 
     @Override
     public void onInitialize(){
-        for(String s : new String[] { "ace", "aro", "bi", "gay", "lesbian"
-                                    , "nonbinary", "trans", "pan"          }){
+        for(String s : new String[] { "ace", "agender", "aro", "bi", "demiboy"
+                                    , "demigirl", "gay", "genderfluid"
+                                    , "genderqueer", "lesbian", "mlm"
+                                    , "nonbinary", "omni", "pan", "poly"
+                                    , "trans", "xenogender" }){
             Item it = new NectarItem(s, new Item.Settings()
                                                 .group(ItemGroup.MISC));
             Identifier id = new Identifier("beebuddy", s + "_nectar");

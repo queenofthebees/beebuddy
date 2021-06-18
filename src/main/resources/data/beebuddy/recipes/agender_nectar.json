@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# L",
+    "#EB",
+    "L B"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:white_dye"
+    },
+    "L": {
+      "item": "minecraft:lime_dye"
+    },
+    "E": {
+      "item": "minecraft:honeycomb"
+    },
+    "B": {
+      "item": "minecraft:black_dye"
+    }
+  },
+  "result": {
+    "item": "beebuddy:agender_nectar",
+    "count": 3
+  }
+}

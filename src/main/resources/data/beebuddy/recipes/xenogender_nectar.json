@@ -1,0 +1,38 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# G",
+    "OEB",
+    "YXP"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:red_dye"
+    },
+    "G": {
+      "item": "minecraft:green_dye"
+    },
+    "O": {
+      "item": "minecraft:orange_dye"
+    },
+    "E": {
+      "item": "minecraft:honeycomb"
+    },
+    "B": {
+      "item": "minecraft:blue_dye"
+    },
+    "Y": {
+      "item": "minecraft:yellow_dye"
+    },
+    "P": {
+      "item": "minecraft:purple_dye"
+    },
+    "X": {
+      "item": "minecraft:white_dye"
+    }
+  },
+  "result": {
+    "item": "beebuddy:xenogender_nectar",
+    "count": 3
+  }
+}

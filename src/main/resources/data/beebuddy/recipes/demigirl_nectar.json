@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# P",
+    "#EG",
+    "P G"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:gray_dye"
+    },
+    "P": {
+      "item": "minecraft:pink_dye"
+    },
+    "E": {
+      "item": "minecraft:honeycomb"
+    },
+    "G": {
+      "item": "minecraft:light_gray_dye"
+    }
+  },
+  "result": {
+    "item": "beebuddy:demigirl_nectar",
+    "count": 3
+  }
+}

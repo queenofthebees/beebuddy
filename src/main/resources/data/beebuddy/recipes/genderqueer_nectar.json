@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# W",
+    "#EG",
+    "W G"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:purple_dye"
+    },
+    "W": {
+      "item": "minecraft:white_dye"
+    },
+    "E": {
+      "item": "minecraft:honeycomb"
+    },
+    "G": {
+      "item": "minecraft:green_dye"
+    }
+  },
+  "result": {
+    "item": "beebuddy:genderqueer_nectar",
+    "count": 3
+  }
+}

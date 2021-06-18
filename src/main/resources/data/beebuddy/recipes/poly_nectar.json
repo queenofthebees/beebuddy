@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# L",
+    "#EC",
+    "L C"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:magenta_dye"
+    },
+    "L": {
+      "item": "minecraft:lime_dye"
+    },
+    "E": {
+      "item": "minecraft:honeycomb"
+    },
+    "C": {
+      "item": "minecraft:cyan_dye"
+    }
+  },
+  "result": {
+    "item": "beebuddy:poly_nectar",
+    "count": 3
+  }
+}

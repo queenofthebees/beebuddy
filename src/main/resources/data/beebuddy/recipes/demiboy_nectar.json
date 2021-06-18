@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# L",
+    "#EG",
+    "L G"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:gray_dye"
+    },
+    "L": {
+      "item": "minecraft:light_blue_dye"
+    },
+    "E": {
+      "item": "minecraft:honeycomb"
+    },
+    "G": {
+      "item": "minecraft:light_gray_dye"
+    }
+  },
+  "result": {
+    "item": "beebuddy:demiboy_nectar",
+    "count": 3
+  }
+}

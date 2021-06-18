@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# W",
+    "#EB",
+    "W B"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:cyan_dye"
+    },
+    "W": {
+      "item": "minecraft:white_dye"
+    },
+    "E": {
+      "item": "minecraft:honeycomb"
+    },
+    "B": {
+      "item": "minecraft:blue_dye"
+    }
+  },
+  "result": {
+    "item": "beebuddy:mlm_nectar",
+    "count": 3
+  }
+}

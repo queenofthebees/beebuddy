@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#WM",
+    "WEL",
+    "MLB"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:orange_dye"
+    },
+    "W": {
+      "item": "minecraft:white_dye"
+    },
+    "M": {
+      "item": "minecraft:magenta_dye"
+    },
+    "E": {
+      "item": "minecraft:honeycomb"
+    },
+    "L": {
+      "item": "minecraft:black_dye"
+    },
+    "B": {
+      "item": "minecraft:blue_dye"
+    }
+  },
+  "result": {
+    "item": "beebuddy:genderfluid_nectar",
+    "count": 3
+  }
+}

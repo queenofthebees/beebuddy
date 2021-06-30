@@ -19,7 +19,7 @@ public class BeeBuddy implements ModInitializer{
     public void onInitialize(){
         for(String s : new String[] { "ace", "agender", "aro", "bi", "demiboy"
                                     , "demigirl", "gay", "genderfluid"
-                                    , "genderqueer", "lesbian", "mlm"
+                                    , "genderqueer", "honeyed", "lesbian", "mlm"
                                     , "nonbinary", "omni", "pan", "poly"
                                     , "trans", "xenogender" }){
             Item it = new NectarItem(s, new Item.Settings()

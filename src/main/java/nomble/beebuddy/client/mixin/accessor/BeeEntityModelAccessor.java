@@ -14,6 +14,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface BeeEntityModelAccessor{
     @Accessor("bodyPitch")
     public void beebuddy$setBodyPitch(float f);
-    @Accessor("body")
-    public ModelPart beebuddy$getBody();
+    @Accessor("bone")
+    public ModelPart beebuddy$getBone();
 }

@@ -12,13 +12,13 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BeeEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 
 import nomble.beebuddy.client.mixin.accessor.BeeEntityModelAccessor;
@@ -29,12 +29,13 @@ public class HeadFriendFeatureRenderer<T extends PlayerEntity>
              extends FeatureRenderer<T, PlayerEntityModel<T>>{
     private final BeeEntityModel<FakeBeeEntity> bee;
     private FakeBeeEntity fake;
-    private CompoundTag nbtCache = null;
+    private NbtCompound nbtCache = null;
 
     public HeadFriendFeatureRenderer(FeatureRendererContext
-                                         <T, PlayerEntityModel<T>> frc){
+                                         <T, PlayerEntityModel<T>> frc
+                                    , ModelPart beeModel){
         super(frc);
-        bee = new BeeEntityModel();
+        bee = new BeeEntityModel(beeModel);
         ((BeeEntityModelAccessor)(Object)bee).beebuddy$setBodyPitch(0F);
     }
 
@@ -46,7 +47,7 @@ public class HeadFriendFeatureRenderer<T extends PlayerEntity>
                       , float headPitch){
         IFriendlyPlayer friend = (IFriendlyPlayer)(Object)player;
         if(friend.beebuddy$hasHeadFriend()){
-            CompoundTag t = friend.beebuddy$getHeadFriendNbt();
+            NbtCompound t = friend.beebuddy$getHeadFriendNbt();
 
             if(fake == null){
                 fake = new FakeBeeEntity(player.world);
@@ -70,9 +71,9 @@ public class HeadFriendFeatureRenderer<T extends PlayerEntity>
             if(player.isInSneakingPose()){ // offsets from BipedEntityModel
                 matrices.translate(0F, 0.2625F, 0F);
             }
-            matrices.multiply(Vector3f.POSITIVE_Z.getRadialQuaternion(h.roll));
-            matrices.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(h.yaw));
-            matrices.multiply(Vector3f.POSITIVE_X.getRadialQuaternion(h.pitch));
+            matrices.multiply(Vec3f.POSITIVE_Z.getRadialQuaternion(h.roll));
+            matrices.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(h.yaw));
+            matrices.multiply(Vec3f.POSITIVE_X.getRadialQuaternion(h.pitch));
             float ageMod = t.getInt("Age") >= 0 ? 2F : 1F;
             float headPos = player.isInSneakingPose() ? -1.4875F : -1.5F;
             matrices.translate(0F, ageMod * headPos - 0.4375, 0F);
@@ -80,8 +81,8 @@ public class HeadFriendFeatureRenderer<T extends PlayerEntity>
 
             BeeEntityModelAccessor bea = (BeeEntityModelAccessor)(Object)bee;
             bee.setAngles(fake, 0F, 0F, animationProgress, 0F, 0F);
-            bea.beebuddy$getBody().pitch = 0F;
-            bea.beebuddy$getBody().pivotY = 19F;
+            bea.beebuddy$getBone().pitch = 0F;
+            bea.beebuddy$getBone().pivotY = 19F;
             bee.render( matrices, v, light, OverlayTexture.DEFAULT_UV
                        , 1F, 1F, 1F, 1F);
             matrices.pop();

@@ -82,8 +82,8 @@ public class FollowFriendGoal extends Goal{
                             double y = (double)p.getY() + 0.5D;
                             double z = (double)p.getZ() + 0.5D;
                             bee.getNavigation().stop();
-                            bee.refreshPositionAndAngles( x, y, z
-                                                        , bee.yaw, bee.pitch);
+                            bee.refreshPositionAndAngles( x, y, z, bee.getYaw()
+                                                        , bee.getPitch());
                             break;
                         }
                     }

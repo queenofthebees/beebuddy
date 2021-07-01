@@ -7,7 +7,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.World;
 
 import nomble.beebuddy.duck.IFriendlyPlayer;
@@ -30,7 +30,7 @@ public abstract class PlayerEntityMixin extends LivingEntity
 
 
     @Unique
-    private static final TrackedData<CompoundTag> beebuddy$HEADFRIEND
+    private static final TrackedData<NbtCompound> beebuddy$HEADFRIEND
         = DataTracker.registerData( PlayerEntity.class
                                   , TrackedDataHandlerRegistry.TAG_COMPOUND);
 
@@ -43,8 +43,8 @@ public abstract class PlayerEntityMixin extends LivingEntity
 
     @Override
     @Unique
-    public CompoundTag beebuddy$getHeadFriendNbt(){
-        return (CompoundTag)this.dataTracker.get(beebuddy$HEADFRIEND);
+    public NbtCompound beebuddy$getHeadFriendNbt(){
+        return (NbtCompound)this.dataTracker.get(beebuddy$HEADFRIEND);
     }
     @Override
     @Unique
@@ -54,7 +54,7 @@ public abstract class PlayerEntityMixin extends LivingEntity
 
     @Override
     @Unique
-    public void beebuddy$setHeadFriendNbt(CompoundTag t){
+    public void beebuddy$setHeadFriendNbt(NbtCompound t){
         this.dataTracker.set(beebuddy$HEADFRIEND, t);
     }
     @Override
@@ -66,12 +66,12 @@ public abstract class PlayerEntityMixin extends LivingEntity
         if(beebuddy$hasHeadFriend()){
             return false;
         }
-        CompoundTag t = new CompoundTag();
+        NbtCompound t = new NbtCompound();
         EntityInvoker inv = (EntityInvoker)(Object)bee;
         t.putString("id", inv.beebuddy$getSavedEntityId());
-        bee.toTag(t);
+        bee.writeNbt(t);
         beebuddy$setHeadFriendNbt(t);
-        bee.remove();
+        bee.discard();
         this.shoulderEntityAddedTime = this.world.getTime();
         return true;
     }
@@ -79,23 +79,23 @@ public abstract class PlayerEntityMixin extends LivingEntity
 
 
     @Shadow
-    private void dropShoulderEntity(CompoundTag entityNbt){}
+    private void dropShoulderEntity(NbtCompound entityNbt){}
 
 
 
     @Inject(method = "initDataTracker", at = @At("TAIL"))
     private void initHeadTracker(CallbackInfo cbi){
-        this.dataTracker.startTracking(beebuddy$HEADFRIEND, new CompoundTag());
+        this.dataTracker.startTracking(beebuddy$HEADFRIEND, new NbtCompound());
     }
 
-    @Inject(method = "writeCustomDataToTag", at = @At("TAIL"))
-    private void writeHeadFriend(CompoundTag tag, CallbackInfo cbi){
+    @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
+    private void writeHeadFriend(NbtCompound tag, CallbackInfo cbi){
         if(beebuddy$hasHeadFriend()){
             tag.put("HeadFriend", beebuddy$getHeadFriendNbt());
         }
     }
-    @Inject(method = "readCustomDataFromTag", at = @At("TAIL"))
-    private void readHeadFriend(CompoundTag tag, CallbackInfo cbi){
+    @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
+    private void readHeadFriend(NbtCompound tag, CallbackInfo cbi){
         if(tag.contains("HeadFriend", 10)){
             beebuddy$setHeadFriendNbt(tag.getCompound("HeadFriend"));
         }
@@ -105,7 +105,7 @@ public abstract class PlayerEntityMixin extends LivingEntity
     private void dropHeadFriend(CallbackInfo cbi){
         if(shoulderEntityAddedTime + 20L < this.world.getTime()){
             dropShoulderEntity(beebuddy$getHeadFriendNbt());
-            beebuddy$setHeadFriendNbt(new CompoundTag());
+            beebuddy$setHeadFriendNbt(new NbtCompound());
         }
     }
 }

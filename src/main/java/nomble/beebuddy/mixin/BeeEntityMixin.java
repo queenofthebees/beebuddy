@@ -22,8 +22,8 @@ import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
@@ -219,14 +219,14 @@ public abstract class BeeEntityMixin extends AnimalEntityMixin
 
 
 
-    @Inject(method = "writeCustomDataToTag", at = @At("TAIL"))
-    private void writeFriendship(CompoundTag tag, CallbackInfo cbi){
+    @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
+    private void writeFriendship(NbtCompound tag, CallbackInfo cbi){
         beebuddy$getFriend().ifPresent(u -> tag.putUuid("Owner", u));
         tag.putBoolean("Sitting", beebuddy$isSitting());
         tag.putString("BeeBuddyNectar", beebuddy$getNectarType());
     }
-    @Inject(method = "readCustomDataFromTag", at = @At("TAIL"))
-    private void readFriendship(CompoundTag tag, CallbackInfo cbi){
+    @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
+    private void readFriendship(NbtCompound tag, CallbackInfo cbi){
         byte tame = 0;
         UUID u = null;
         if(tag.containsUuid("Owner")){
@@ -337,14 +337,14 @@ public abstract class BeeEntityMixin extends AnimalEntityMixin
         if(!this.world.isClient){
             if(stack.getItem() == Items.HONEY_BOTTLE){
                 if(friend && this.getHealth() < this.getMaxHealth()){
-                    if(!player.abilities.creativeMode){
+                    if(!player.getAbilities().creativeMode){
                         stack.decrement(1);
                     }
                     this.heal(this.getMaxHealth());
                     cbir.setReturnValue(ActionResult.SUCCESS);
                 }
                 else if(!friend && !beebuddy$hasFriend()){
-                    if(!player.abilities.creativeMode){
+                    if(!player.getAbilities().creativeMode){
                         stack.decrement(1);
                     }
                     if(this.random.nextInt(4) == 0){
@@ -366,7 +366,7 @@ public abstract class BeeEntityMixin extends AnimalEntityMixin
             else if(stack.getItem() instanceof NectarItem){
                 NectarItem n = (NectarItem)stack.getItem();
                 if(friend || !beebuddy$hasFriend()){
-                    if(!player.abilities.creativeMode){
+                    if(!player.getAbilities().creativeMode){
                         stack.decrement(1);
                     }
                     beebuddy$setNectarType(n.getType());

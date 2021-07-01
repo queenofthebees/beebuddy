@@ -66,11 +66,11 @@ java {
 }
 
 jar {
-    from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}"}
+    from("LICENSE.wtfpl") {
+        rename { "${it}_${project.archivesBaseName}.wtfpl"}
     }
-    from("LICENSE.textures") {
-        rename { "${it}_${project.archivesBaseName}.textures"}
+    from("LICENSE.mit") {
+        rename { "${it}_${project.archivesBaseName}.mit"}
     }
 }
 

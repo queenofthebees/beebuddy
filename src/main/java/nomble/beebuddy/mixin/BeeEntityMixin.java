@@ -182,7 +182,21 @@ public abstract class BeeEntityMixin extends AnimalEntityMixin
                                                         , 4.0F));
         this.goalSelector.add(8, new SwimGoal(us));
 
+        BeeEntityMixin mix = this;
         this.targetSelector.add(1, (new RevengeGoal(this){
+            @Override
+            public boolean canStart(){
+                if(!super.canStart()){
+                    return false;
+                }
+                if(us.getAttacker() != null){
+                    UUID u = us.getAttacker().getUuid();
+                    return !u.equals(mix.beebuddy$getFriend());
+                }
+                else{
+                    return true;
+                }
+            }
             @Override
             public boolean shouldContinue(){
                 return us.hasAngerTime() && super.shouldContinue();

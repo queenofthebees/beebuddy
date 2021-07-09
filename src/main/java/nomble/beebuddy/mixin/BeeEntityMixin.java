@@ -360,6 +360,13 @@ public abstract class BeeEntityMixin extends AnimalEntityMixin
                 else if(!friend && !beebuddy$hasFriend()){
                     if(!player.getAbilities().creativeMode){
                         stack.decrement(1);
+                        ItemStack g = new ItemStack(Items.GLASS_BOTTLE);
+                        if(stack.isEmpty()){
+                            player.setStackInHand(hand, g);
+                        }
+                        else if(!player.getInventory().insertStack(g)){
+                            player.dropItem(g, false);
+                        }
                     }
                     if(this.random.nextInt(4) == 0){
                         beebuddy$setFriend(Optional.of(player.getUuid()));

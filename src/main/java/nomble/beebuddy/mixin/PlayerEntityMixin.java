@@ -32,7 +32,7 @@ public abstract class PlayerEntityMixin extends LivingEntity
     @Unique
     private static final TrackedData<NbtCompound> beebuddy$HEADFRIEND
         = DataTracker.registerData( PlayerEntity.class
-                                  , TrackedDataHandlerRegistry.TAG_COMPOUND);
+                                  , TrackedDataHandlerRegistry.NBT_COMPOUND);
 
 
 

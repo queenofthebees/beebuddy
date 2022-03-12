@@ -57,7 +57,7 @@ public class FollowFriendGoal extends Goal{
     @Override
     public void tick(){
         ((IFriendlyBee)(Object)bee).beebuddy$getFriendPlayer().ifPresent(f -> {
-            bee.getLookControl().lookAt(f, 10F, (float)bee.getLookPitchSpeed());
+            bee.getLookControl().lookAt(f, 10F, (float)bee.getMaxLookPitchChange());
             if(tick++ % 10 == 0){
                 tick = 0;
                 double s = f.getAttributeValue(EntityAttributes
